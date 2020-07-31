@@ -3,7 +3,7 @@
 
 TEST(MathAnalyzerParsing, parseEmptyString)
 {
-	MathAnalyzer analyzer("");
-	EXPECT_FALSE(analyzer.is_string_correct());
+    MathAnalyzer analyzer;
+    EXPECT_FALSE(analyzer.parseValue(""));
 }
 
