@@ -51,5 +51,5 @@ int TokenStream::get_current_stream_pos() const
 
 bool TokenStream::full_stream_parsed() const
 {
-    return !input_stream.rdbuf()->in_avail();
+    return (!latest_token || latest_token->get_type() == TokenType::END) && !input_stream.rdbuf()->in_avail();
 }

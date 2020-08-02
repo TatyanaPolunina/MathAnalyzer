@@ -12,6 +12,26 @@ TEST(MathAnalyzerParsing, parseSimpleMultiply)
     EXPECT_NEAR(6.0, MathAnalyzer::parseValue("2*3"), 0.01);
 }
 
+
+TEST(MathAnalyzerParsing, parseIncorrectSameSigns)
+{
+    EXPECT_THROW(MathAnalyzer::parseValue("2++3"), std::invalid_argument);
+    EXPECT_THROW(MathAnalyzer::parseValue("2**3"), std::invalid_argument);
+    EXPECT_THROW(MathAnalyzer::parseValue("2//3"), std::invalid_argument);
+    EXPECT_THROW(MathAnalyzer::parseValue("(2)++3"), std::invalid_argument);
+    EXPECT_THROW(MathAnalyzer::parseValue("(2++3)"), std::invalid_argument);
+    EXPECT_THROW(MathAnalyzer::parseValue("(2++)3"), std::invalid_argument);
+}
+
+TEST(MathAnalyzerParsing, parseIncorrectDifferentSigns)
+{
+    EXPECT_THROW(MathAnalyzer::parseValue("2+*3"), std::invalid_argument);
+    EXPECT_THROW(MathAnalyzer::parseValue("2*+3"), std::invalid_argument);
+    EXPECT_THROW(MathAnalyzer::parseValue("2/*3"), std::invalid_argument);
+    EXPECT_THROW(MathAnalyzer::parseValue("(2-+3"), std::invalid_argument);
+    EXPECT_THROW(MathAnalyzer::parseValue("2-*3"), std::invalid_argument);
+}
+
 TEST(MathAnalyzerParsing, parseSimpleMinus)
 {
     EXPECT_NEAR(1.0, MathAnalyzer::parseValue("2-1"), 0.01);
@@ -45,6 +65,11 @@ TEST(MathAnalyzerParsing, parseIncorrectBracketsWithSum)
     EXPECT_THROW(MathAnalyzer::parseValue("(6.0*2.0)-4.0() / 2"), std::invalid_argument);
 }
 
+
+TEST(MathAnalyzerParsing, parseExpressionWithCorrectTrim)
+{
+    EXPECT_NEAR(1.5, MathAnalyzer::parseValue("   3.0 / 2.0  "), 0.01);
+}
 
 TEST(MathAnalyzerParsing, parseUnaryMinus)
 {

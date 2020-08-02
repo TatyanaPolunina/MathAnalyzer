@@ -9,9 +9,12 @@ private:
     std::unique_ptr<Expression> parse_expression();
     std::unique_ptr<Expression> parse_primary();
     std::unique_ptr<Expression> parse_term();
+    void throw_invalid_arg_exception(const std::string& msg, int pos);
 private:
     TokenStream token_stream;
 };
+
+
 
 
 ExpressionParser::ExpressionParser(TokenStream& token_stream)
@@ -25,9 +28,7 @@ std::unique_ptr<Expression> ExpressionParser::parse_expression_from_stream()
     auto expression = parse_expression();
     if (!token_stream.full_stream_parsed())
     {
-        std::stringstream error_msg;
-        error_msg << "Unexpected end of expression. Pos: " << token_stream.get_current_stream_pos();
-        throw std::invalid_argument(error_msg.str());
+        throw_invalid_arg_exception("Unexpected end of expression", token_stream.get_current_stream_pos());
     }
     return  expression;
 }
@@ -74,9 +75,7 @@ std::unique_ptr<Expression> ExpressionParser::parse_primary()
         t= token_stream.get_next_token();
         if (t.get_type() != TokenType::CLOSED_BRACKET)
         {
-            std::stringstream err_msg;
-            err_msg << "Your expression contains no closed bracket, open bracket on pos: " << brackets_position;
-            throw std::invalid_argument(err_msg.str());
+            throw_invalid_arg_exception("Your expression contains no closed bracket, open bracket", brackets_position);
         }
         return expr;
     }
@@ -89,10 +88,9 @@ std::unique_ptr<Expression> ExpressionParser::parse_primary()
         return std::make_unique<NegativeExpression>(parse_primary());
     }
 
-    std::stringstream err_msg;
     auto err_pos = std::max(0, token_stream.get_current_stream_pos() - 1);
-    err_msg << "Your string is not valid math expression. Incorrect sym on pos: " << err_pos;
-    throw std::invalid_argument(err_msg.str());
+    throw_invalid_arg_exception("Your string is not valid math expression. Incorrect sym.", err_pos);
+    return  nullptr;
 }
 
 std::unique_ptr<Expression> ExpressionParser::parse_term()
@@ -118,6 +116,13 @@ std::unique_ptr<Expression> ExpressionParser::parse_term()
             return  left;
         }
     }
+}
+
+void ExpressionParser::throw_invalid_arg_exception(const std::string &msg, int pos)
+{
+    std::stringstream error_msg;
+    error_msg << msg << " Pos: " << pos;
+    throw std::invalid_argument(error_msg.str());
 }
 
 double MathAnalyzer::parseValue(const std::string &strExpression)
