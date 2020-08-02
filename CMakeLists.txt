@@ -4,12 +4,14 @@ include_directories($ENV{GTEST_HOME}/googletest/include $ENV{GTEST_HOME}/googlem
 link_directories($ENV{GTEST_HOME}/build/lib)
 
 set(CMAKE_CXX_FLAGS "${CMAXE_CXX_FLAGS} -Wall")
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(sources 
     main.cpp
+    tokenstream.cpp
+    token.cpp
     mathAnalyzer.cpp)
 set(testSources
     mathAnalyzerTest.cpp
