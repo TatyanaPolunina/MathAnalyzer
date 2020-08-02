@@ -1,6 +1,6 @@
 project(mathAnalyzer)
 cmake_minimum_required(VERSION 2.10)
-include_directories($ENV{GTEST_HOME}/googletest/include $ENV{GTEST_HOME}/googlemock/include)
+include_directories($ENV{GTEST_HOME}/googletest/include)
 link_directories($ENV{GTEST_HOME}/build/lib)
 
 set(CMAKE_CXX_FLAGS "${CMAXE_CXX_FLAGS} -Wall")

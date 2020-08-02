@@ -22,7 +22,14 @@ ExpressionParser::ExpressionParser(TokenStream& token_stream)
 
 std::unique_ptr<Expression> ExpressionParser::parse_expression_from_stream()
 {
-    return parse_expression();
+    auto expression = parse_expression();
+    if (!token_stream.full_stream_parsed())
+    {
+        std::stringstream error_msg;
+        error_msg << "Unexpected end of expression. Pos: " << token_stream.get_current_stream_pos();
+        throw std::invalid_argument(error_msg.str());
+    }
+    return  expression;
 }
 
 std::unique_ptr<Expression> ExpressionParser::parse_expression()
@@ -43,6 +50,7 @@ std::unique_ptr<Expression> ExpressionParser::parse_expression()
                 right = std::make_unique<NegativeExpression>(parse_term());
             }
 
+
             if (right)
             {
                 left = std::make_unique<SumExpression>(std::move(left), std::move(right));
@@ -61,11 +69,14 @@ std::unique_ptr<Expression> ExpressionParser::parse_primary()
     Token t = token_stream.get_next_token();
     if (t.get_type() == TokenType::OPEN_BRACKET)
     {
+        auto brackets_position = token_stream.get_current_stream_pos() - 1;
         auto expr = parse_expression();
-        t= token_stream.get_next_token();;
+        t= token_stream.get_next_token();
         if (t.get_type() != TokenType::CLOSED_BRACKET)
         {
-            throw std::logic_error("No closed bracket");
+            std::stringstream err_msg;
+            err_msg << "Your expression contains no closed bracket, open bracket on pos: " << brackets_position;
+            throw std::invalid_argument(err_msg.str());
         }
         return expr;
     }
@@ -73,7 +84,15 @@ std::unique_ptr<Expression> ExpressionParser::parse_primary()
     {
         return std::make_unique<NumericExpression>(t.get_value());
     }
-    return  nullptr;
+    if (t.get_type() == TokenType::MINUS)
+    {
+        return std::make_unique<NegativeExpression>(parse_primary());
+    }
+
+    std::stringstream err_msg;
+    auto err_pos = std::max(0, token_stream.get_current_stream_pos() - 1);
+    err_msg << "Your string is not valid math expression. Incorrect sym on pos: " << err_pos;
+    throw std::invalid_argument(err_msg.str());
 }
 
 std::unique_ptr<Expression> ExpressionParser::parse_term()
@@ -104,7 +123,7 @@ std::unique_ptr<Expression> ExpressionParser::parse_term()
 double MathAnalyzer::parseValue(const std::string &strExpression)
 {
     std::stringstream expr_stream;
-    expr_stream << strExpression;
+    expr_stream << strExpression << '\0';
     TokenStream token_stream(expr_stream);
     ExpressionParser parser(token_stream);
     auto expression = parser.parse_expression_from_stream();

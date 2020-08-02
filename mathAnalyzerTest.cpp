@@ -19,7 +19,7 @@ TEST(MathAnalyzerParsing, parseSimpleMinus)
 
 TEST(MathAnalyzerParsing, parseSimpledDivide)
 {
-    EXPECT_NEAR(1.5, MathAnalyzer::parseValue("3.0/2.0"), 0.01);
+    EXPECT_NEAR(1.5, MathAnalyzer::parseValue("3.0 / 2.0"), 0.01);
 }
 
 
@@ -33,3 +33,77 @@ TEST(MathAnalyzerParsing, parseBracketsWithMultiply)
 {
     EXPECT_NEAR(30.0, MathAnalyzer::parseValue("(6.0-1.0)*(2.0 + 4)"), 0.01);
 }
+
+
+TEST(MathAnalyzerParsing, parseBracketsWithSum)
+{
+    EXPECT_NEAR(10.0, MathAnalyzer::parseValue("(6.0*2.0)-(4.0 / 2)"), 0.01);
+}
+
+TEST(MathAnalyzerParsing, parseIncorrectBracketsWithSum)
+{
+    EXPECT_THROW(MathAnalyzer::parseValue("(6.0*2.0)-4.0() / 2"), std::invalid_argument);
+}
+
+
+TEST(MathAnalyzerParsing, parseUnaryMinus)
+{
+    EXPECT_NEAR(-5.0, MathAnalyzer::parseValue("-2-3"), 0.01);
+}
+
+
+TEST(MathAnalyzerParsing, parseUnaryMinusWithBinary)
+{
+    EXPECT_NEAR(1, MathAnalyzer::parseValue("-2--3"), 0.01);
+}
+
+
+TEST(MathAnalyzerParsing, parseUnaryMinusWithBrackets)
+{
+    EXPECT_NEAR(-5.0, MathAnalyzer::parseValue("-(6.0-1.0)"), 0.01);
+}
+
+
+
+TEST(MathAnalyzerParsing, parseBracketsIncorrectNumber)
+{
+    EXPECT_THROW(MathAnalyzer::parseValue("(2+((6.0-1.0))"), std::invalid_argument);
+}
+
+TEST(MathAnalyzerParsing, parseBracketsIncorrectNumberAtTheEnd)
+{
+    EXPECT_THROW(MathAnalyzer::parseValue("(2+6.0-1.0))"), std::invalid_argument);
+}
+
+
+TEST(MathAnalyzerParsing, parseIncorrectInput)
+{
+    EXPECT_THROW(MathAnalyzer::parseValue("(2+fd"), std::invalid_argument);
+}
+
+
+TEST(MathAnalyzerParsing, parseEmptyString)
+{
+    EXPECT_THROW(MathAnalyzer::parseValue(""), std::invalid_argument);
+}
+
+TEST(MathAnalyzerParsing, parseExpressionWithSpaces)
+{
+    EXPECT_NEAR(-5.0, MathAnalyzer::parseValue("-( 6.0 - 1.0)"), 0.01);
+}
+
+
+TEST(MathAnalyzerParsing, parseExpressionWithSpacesAndSeveralTypesOfExpr)
+{
+    EXPECT_NEAR(-26.0, MathAnalyzer::parseValue("-( 6.0 - 1.0 ) * 4 - 2 * 3"), 0.01);
+}
+
+
+TEST(MathAnalyzerParsing, parseDevisionByZeroCase)
+{
+    EXPECT_THROW(MathAnalyzer::parseValue("(2+5) / (9 - 3 * 3)"), std::runtime_error);
+}
+
+
+
+

@@ -40,11 +40,19 @@ public:
 protected:
     Expression& left() const
     {
+        if (!m_left)
+        {
+            throw  std::logic_error("Incorrect left part of binary expression");
+        }
         return *m_left;
     }
 
     Expression& right() const
     {
+        if (!m_right)
+        {
+            throw  std::logic_error("Incorrect right part of binary expression");
+        }
         return *m_right;
     }
 private:
@@ -93,6 +101,11 @@ public:
 
     double value() override
     {
+        auto divider = right().value();
+        if (divider == 0)
+        {
+            throw std::runtime_error("Division by zero expression presented");
+        }
         return left().value() / right().value();
     }
 };
@@ -108,6 +121,10 @@ public:
 
     double value()
     {
+        if (!m_expr)
+        {
+            throw std::logic_error("Incorrect input for negative expression");
+        }
         return -m_expr->value();
     }
 private:

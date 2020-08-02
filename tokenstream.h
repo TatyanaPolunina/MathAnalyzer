@@ -13,6 +13,10 @@ public:
     Token get_next_token();
 
     void put_token_back(const Token& latest_token);
+
+    int get_current_stream_pos() const;
+
+    bool full_stream_parsed() const;
 private:
     std::basic_iostream<char>& input_stream;
     std::optional<Token> latest_token;

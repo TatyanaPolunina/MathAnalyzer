@@ -10,6 +10,7 @@ enum class TokenType
     MINUS,
     MULTIPLY,
     DIVIDE,
+    END,
     UNDEFINED
 };
 
