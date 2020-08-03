@@ -1,6 +1,6 @@
-#include "mathAnalyzer.h"
+#include "../include/mathAnalyzer.h"
 #include "expression.h"
-#include "tokenstream.h"
+#include "tokenStream.h"
 
 class ExpressionParser {
 public:

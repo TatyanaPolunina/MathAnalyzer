@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "mathAnalyzer.h"
+#include "../include/mathAnalyzer.h"
 
 int main(int, char**) {
   std::string math_expession;

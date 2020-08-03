@@ -1,4 +1,4 @@
-#include "tokenstream.h"
+#include "tokenStream.h"
 #include "sstream"
 
 TokenStream::TokenStream(std::iostream& input_stream)

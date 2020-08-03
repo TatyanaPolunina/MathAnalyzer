@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "mathAnalyzer.h"
+#include "../include/mathAnalyzer.h"
 
 TEST(MathAnalyzerParsing, parseSimpleSum) {
   EXPECT_NEAR(4.0, MathAnalyzer::ParseExpression("2+2"), 0.01);
