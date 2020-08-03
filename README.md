@@ -1,7 +1,7 @@
 B. Stroustrup based simple calculator implementation with adaptation to the Google Code Style
 
 Task definition: 
-A simple calculator with few operations (+, -, *, /, )
+A simple calculator with such operations +, -, *, /, ^, braces with corresponded mathematical priority
 
 
 
