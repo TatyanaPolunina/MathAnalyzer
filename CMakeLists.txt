@@ -9,15 +9,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(commonSources
-    tokenstream.cpp
-    token.cpp
-    mathAnalyzer.cpp)
+    src/mathAnalyzer.cpp
+    src/token.cpp
+    src/tokenStream.cpp
+    )
 set (mainSources
-    main.cpp
+    app/main.cpp
     )
 set(testSources
-    mainTests.cpp
-    mathAnalyzerTest.cpp
+    test/mainTests.cpp
+    test/mathAnalyzerTest.cpp
     )
 
 
