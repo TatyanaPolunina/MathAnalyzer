@@ -14,7 +14,7 @@ class ExpressionParser {
   std::unique_ptr<Expression> ParseExpression();
   std::unique_ptr<Expression> ParsePrimary();
   std::unique_ptr<Expression> ParseTerm();
-  /// power has more priority than multiple, division
+  /// for highest priority operation: like power
   std::unique_ptr<Expression> ParsePriorityTerm();
   void ThrowInvalidArgException(const std::string &msg, int stream_pos);
 

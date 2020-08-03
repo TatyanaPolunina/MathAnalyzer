@@ -59,6 +59,10 @@ TEST(MathAnalyzerParsing, parseUnaryMinus) {
   EXPECT_NEAR(-5.0, MathAnalyzer::ParseExpression("-2-3"), 0.01);
 }
 
+TEST(MathAnalyzerParsing, parseUnaryMinusMultiplication) {
+  EXPECT_NEAR(-6.0, MathAnalyzer::ParseExpression("2*-3"), 0.01);
+}
+
 TEST(MathAnalyzerParsing, parseUnaryMinusWithBinary) {
   EXPECT_NEAR(1, MathAnalyzer::ParseExpression("-2--3"), 0.01);
 }
