@@ -10,16 +10,16 @@ class TokenStream
 public:
     TokenStream(std::basic_iostream<char>& input_stream);
 
-    Token get_next_token();
+    Token GetNextToken();
 
-    void put_token_back(const Token& latest_token);
+    void PutTokenBack(const Token& latest_token);
 
-    int get_current_stream_pos() const;
+    int GetCurrentStreamPos() const;
 
-    bool full_stream_parsed() const;
+    bool FullStreamParsed() const;
 private:
-    std::basic_iostream<char>& input_stream;
-    std::optional<Token> latest_token;
+    std::basic_iostream<char>& input_stream_;
+    std::optional<Token> latest_token_;
 };
 
 #endif // TOKENSTREAM_H

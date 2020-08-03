@@ -3,132 +3,102 @@
 
 #include <memory>
 
-class Expression
-{
-public:
-    double operator()()
-    {
-        return value();
-    }
-    virtual double value() = 0;
+/*
+ * Base class for math expression
+ */
+class Expression {
+ public:
+  /*
+   * throws logic_error in case expression is built incorrect, runtime_error in case
+   * calculation is not possible
+   */
+  virtual double Value() = 0;
+  virtual ~Expression() = default;
 };
 
-class NumericExpression : public Expression
-{
-public:
-    NumericExpression(double value)
-        : m_value (value)
-    {
-    }
+class NumericExpression : public Expression {
+ public:
+  NumericExpression(double value) : value_(value) {}
 
-    double value() override
-    {
-        return m_value;
-    }
-private:
-    double m_value;
+  double Value() override { return value_; }
+
+ private:
+  double value_;
 };
 
+class BinaryExpression : public Expression {
+ public:
+  BinaryExpression(std::unique_ptr<Expression> left,
+                   std::unique_ptr<Expression> right)
+      : left_(std::move(left)), right_(std::move(right)) {}
 
-class BinaryExpression : public Expression
-{
-public:
-    BinaryExpression(std::unique_ptr<Expression> left, std::unique_ptr<Expression> right)
-        : m_left(std::move(left))
-        , m_right(std::move(right))
-    {}
-protected:
-    Expression& left() const
-    {
-        if (!m_left)
-        {
-            throw  std::logic_error("Incorrect left part of binary expression");
-        }
-        return *m_left;
+ protected:
+  Expression& Left() const {
+    if (!left_) {
+      throw std::logic_error("Incorrect left part of binary expression");
     }
+    return *left_;
+  }
 
-    Expression& right() const
-    {
-        if (!m_right)
-        {
-            throw  std::logic_error("Incorrect right part of binary expression");
-        }
-        return *m_right;
+  Expression& Right() const {
+    if (!right_) {
+      throw std::logic_error("Incorrect right part of binary expression");
     }
-private:
-    std::unique_ptr<Expression> m_left;
-    std::unique_ptr<Expression> m_right;
+    return *right_;
+  }
+
+ private:
+  std::unique_ptr<Expression> left_;
+  std::unique_ptr<Expression> right_;
 };
 
+class SumExpression : public BinaryExpression {
+ public:
+  SumExpression(std::unique_ptr<Expression> left,
+                std::unique_ptr<Expression> right)
+      : BinaryExpression(std::move(left), std::move(right)) {}
 
-class SumExpression : public BinaryExpression
-{
-public:
-    SumExpression(std::unique_ptr<Expression> left, std::unique_ptr<Expression> right)
-        : BinaryExpression(std::move(left), std::move(right))
-    {
-    }
-
-    double value() override
-    {
-        return left().value() + right().value();
-    }
+  double Value() override { return Left().Value() + Right().Value(); }
 };
 
+class MultipleExpression : public BinaryExpression {
+ public:
+  MultipleExpression(std::unique_ptr<Expression> left,
+                     std::unique_ptr<Expression> right)
+      : BinaryExpression(std::move(left), std::move(right)) {}
 
-class MultipleExpression : public BinaryExpression
-{
-public:
-    MultipleExpression(std::unique_ptr<Expression> left, std::unique_ptr<Expression> right)
-        : BinaryExpression(std::move(left), std::move(right))
-    {
-    }
-
-    double value() override
-    {
-        return left().value() * right().value();
-    }
+  double Value() override { return Left().Value() * Right().Value(); }
 };
 
+class DivisionExpression : public BinaryExpression {
+ public:
+  DivisionExpression(std::unique_ptr<Expression> left,
+                     std::unique_ptr<Expression> right)
+      : BinaryExpression(std::move(left), std::move(right)) {}
 
-class DivisionExpression : public BinaryExpression
-{
-public:
-    DivisionExpression(std::unique_ptr<Expression> left, std::unique_ptr<Expression> right)
-        : BinaryExpression(std::move(left), std::move(right))
-    {
+  double Value() override {
+    auto divider = Right().Value();
+    if (divider == 0) {
+      throw std::runtime_error("Division by zero expression presented");
     }
-
-    double value() override
-    {
-        auto divider = right().value();
-        if (divider == 0)
-        {
-            throw std::runtime_error("Division by zero expression presented");
-        }
-        return left().value() / right().value();
-    }
+    return Left().Value() / Right().Value();
+  }
 };
 
-class NegativeExpression : public Expression
-{
-public:
-    NegativeExpression(std::unique_ptr<Expression> expr)
-        : m_expr(std::move(expr))
-    {
+class NegativeExpression : public Expression {
+ public:
+  NegativeExpression(std::unique_ptr<Expression> expr)
+      : base_expr_(std::move(expr)) {}
 
+  double Value() {
+    if (!base_expr_) {
+      throw std::logic_error("Incorrect input for negative expression");
     }
+    return -base_expr_->Value();
+  }
 
-    double value()
-    {
-        if (!m_expr)
-        {
-            throw std::logic_error("Incorrect input for negative expression");
-        }
-        return -m_expr->value();
-    }
-private:
-    std::unique_ptr<Expression> m_expr;
+ private:
+  std::unique_ptr<Expression> base_expr_;
 };
 
-#endif // EXPRESSION_H
+#endif  // EXPRESSION_H
