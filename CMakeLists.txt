@@ -8,13 +8,20 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(sources 
-    main.cpp
+set(commonSources
     tokenstream.cpp
     token.cpp
     mathAnalyzer.cpp)
+set (mainSources
+    main.cpp
+    )
 set(testSources
+    mainTests.cpp
     mathAnalyzerTest.cpp
     )
-add_executable(mathAnalyzerTest ${testSources} ${sources})
+
+
+add_executable(mathAnalyzer ${commonSources} ${mainSources})
+add_executable(mathAnalyzerTest ${commonSources} ${testSources})
+target_link_libraries(mathAnalyzer gtest pthread)
 target_link_libraries(mathAnalyzerTest gtest pthread)
