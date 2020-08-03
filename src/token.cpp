@@ -14,6 +14,8 @@ TokenType Token::ParseTokenType(const char typeSym) {
       return TokenType::MULTIPLY;
     case '/':
       return TokenType::DIVIDE;
+    case '^':
+      return TokenType::POWER;
     case '0':
     case '1':
     case '2':

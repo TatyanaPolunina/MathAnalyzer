@@ -1,5 +1,5 @@
-#include "gtest/gtest.h"
 #include "../include/mathAnalyzer.h"
+#include "gtest/gtest.h"
 
 TEST(MathAnalyzerParsing, parseSimpleSum) {
   EXPECT_NEAR(4.0, MathAnalyzer::ParseExpression("2+2"), 0.01);
@@ -101,4 +101,28 @@ TEST(MathAnalyzerParsing, parseExpressionWithSpacesAndSeveralTypesOfExpr) {
 TEST(MathAnalyzerParsing, parseDevisionByZeroCase) {
   EXPECT_THROW(MathAnalyzer::ParseExpression("(2+5) / (9 - 3 * 3)"),
                std::runtime_error);
+}
+
+TEST(MathAnalyzerParsing, parsePowerSimpleCase) {
+  EXPECT_NEAR(8.0, MathAnalyzer::ParseExpression("2^3"), 0.01);
+}
+
+TEST(MathAnalyzerParsing, parsePowerBracketsCase) {
+  EXPECT_NEAR(27.0, MathAnalyzer::ParseExpression("(2+1)^3"), 0.01);
+}
+
+TEST(MathAnalyzerParsing, parsePowerWithNotPrimary) {
+  EXPECT_NEAR(10.0, MathAnalyzer::ParseExpression("2+2^3"), 0.01);
+}
+
+TEST(MathAnalyzerParsing, parsePowerWithTerm) {
+  EXPECT_NEAR(16.0, MathAnalyzer::ParseExpression("2*2^3"), 0.01);
+}
+
+TEST(MathAnalyzerParsing, parsePowerWithExprInPower) {
+  EXPECT_NEAR(64.0, MathAnalyzer::ParseExpression("(2*2)^(1 + 2)"), 0.01);
+}
+
+TEST(MathAnalyzerParsing, parsePowerWithTermsAfter) {
+  EXPECT_NEAR(32.0, MathAnalyzer::ParseExpression("2*2^3*2"), 0.01);
 }

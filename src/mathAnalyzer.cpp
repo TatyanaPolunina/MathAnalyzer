@@ -3,20 +3,22 @@
 #include "tokenStream.h"
 
 class ExpressionParser {
-public:
+ public:
   ExpressionParser(TokenStream &token_stream);
   /*
    * Throw invalid_argument in case expression is not valid
    */
   std::unique_ptr<Expression> ParseExpressionFromStream();
 
-private:
+ private:
   std::unique_ptr<Expression> ParseExpression();
   std::unique_ptr<Expression> ParsePrimary();
   std::unique_ptr<Expression> ParseTerm();
+  /// power has more priority than multiple, division
+  std::unique_ptr<Expression> ParsePriorityTerm();
   void ThrowInvalidArgException(const std::string &msg, int stream_pos);
 
-private:
+ private:
   TokenStream token_stream_;
 };
 
@@ -27,13 +29,13 @@ std::unique_ptr<Expression> ExpressionParser::ParseExpressionFromStream() {
   auto expression = ParseExpression();
   if (!token_stream_.FullStreamParsed()) {
     ThrowInvalidArgException("Unexpected end of expression",
-                                token_stream_.GetCurrentStreamPos());
+                             token_stream_.GetCurrentStreamPos());
   }
   return expression;
 }
 
 std::unique_ptr<Expression> ExpressionParser::ParseExpression() {
-  std::unique_ptr<Expression> left = ParseTerm(); // read and evaluate a Term
+  std::unique_ptr<Expression> left = ParseTerm();  // read and evaluate a Term
   Token t = token_stream_.GetNextToken();
 
   while (true) {
@@ -82,18 +84,33 @@ std::unique_ptr<Expression> ExpressionParser::ParsePrimary() {
 }
 
 std::unique_ptr<Expression> ExpressionParser::ParseTerm() {
-  auto left = ParsePrimary();
+  auto left = ParsePriorityTerm();
   Token t =
-      token_stream_.GetNextToken(); // get the next token from token stream
+      token_stream_.GetNextToken();  // get the next token from token stream
 
   while (true) {
     if (t.GetType() == TokenType::MULTIPLY) {
       left = std::make_unique<MultipleExpression>(std::move(left),
-                                                  ParsePrimary());
+                                                  ParsePriorityTerm());
       t = token_stream_.GetNextToken();
     } else if (t.GetType() == TokenType::DIVIDE) {
       left = std::make_unique<DivisionExpression>(std::move(left),
-                                                  ParsePrimary());
+                                                  ParsePriorityTerm());
+      t = token_stream_.GetNextToken();
+    } else {
+      token_stream_.PutTokenBack(t);
+      return left;
+    }
+  }
+}
+
+std::unique_ptr<Expression> ExpressionParser::ParsePriorityTerm() {
+  auto left = ParsePrimary();
+  Token t =
+      token_stream_.GetNextToken();  // get the next token from token stream
+  while (true) {
+    if (t.GetType() == TokenType::POWER) {
+      left = std::make_unique<PowerExpression>(std::move(left), ParsePrimary());
       t = token_stream_.GetNextToken();
     } else {
       token_stream_.PutTokenBack(t);
@@ -103,7 +120,7 @@ std::unique_ptr<Expression> ExpressionParser::ParseTerm() {
 }
 
 void ExpressionParser::ThrowInvalidArgException(const std::string &msg,
-                                                   int stream_pos) {
+                                                int stream_pos) {
   std::stringstream error_msg;
   error_msg << msg << " Pos: " << stream_pos;
   throw std::invalid_argument(error_msg.str());

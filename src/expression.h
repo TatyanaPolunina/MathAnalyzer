@@ -1,16 +1,16 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
+#include <cmath>
 #include <memory>
-
 /*
  * Base class for math expression
  */
 class Expression {
  public:
   /*
-   * throws logic_error in case expression is built incorrect, runtime_error in case
-   * calculation is not possible
+   * throws logic_error in case expression is built incorrect, runtime_error in
+   * case calculation is not possible
    */
   virtual double Value() = 0;
   virtual ~Expression() = default;
@@ -99,6 +99,15 @@ class NegativeExpression : public Expression {
 
  private:
   std::unique_ptr<Expression> base_expr_;
+};
+
+class PowerExpression : public BinaryExpression {
+ public:
+  PowerExpression(std::unique_ptr<Expression> left,
+                  std::unique_ptr<Expression> right)
+      : BinaryExpression(std::move(left), std::move(right)) {}
+
+  double Value() override { return std::pow(Left().Value(), Right().Value()); }
 };
 
 #endif  // EXPRESSION_H

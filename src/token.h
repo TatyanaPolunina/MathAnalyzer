@@ -9,6 +9,7 @@ enum class TokenType {
   MINUS,
   MULTIPLY,
   DIVIDE,
+  POWER,
   END,
   UNDEFINED
 };
