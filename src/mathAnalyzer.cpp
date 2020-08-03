@@ -35,7 +35,7 @@ std::unique_ptr<Expression> ExpressionParser::ParseExpressionFromStream() {
 }
 
 std::unique_ptr<Expression> ExpressionParser::ParseExpression() {
-  std::unique_ptr<Expression> left = ParseTerm();  // read and evaluate a Term
+  std::unique_ptr<Expression> left = ParseTerm();
   Token t = token_stream_.GetNextToken();
 
   while (true) {
@@ -85,8 +85,7 @@ std::unique_ptr<Expression> ExpressionParser::ParsePrimary() {
 
 std::unique_ptr<Expression> ExpressionParser::ParseTerm() {
   auto left = ParsePriorityTerm();
-  Token t =
-      token_stream_.GetNextToken();  // get the next token from token stream
+  Token t = token_stream_.GetNextToken();
 
   while (true) {
     if (t.GetType() == TokenType::MULTIPLY) {
@@ -106,8 +105,7 @@ std::unique_ptr<Expression> ExpressionParser::ParseTerm() {
 
 std::unique_ptr<Expression> ExpressionParser::ParsePriorityTerm() {
   auto left = ParsePrimary();
-  Token t =
-      token_stream_.GetNextToken();  // get the next token from token stream
+  Token t = token_stream_.GetNextToken();
   while (true) {
     if (t.GetType() == TokenType::POWER) {
       left = std::make_unique<PowerExpression>(std::move(left), ParsePrimary());
